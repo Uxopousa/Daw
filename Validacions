@@ -1,0 +1,12 @@
+public class Utils {
+    private static final String LETRAS_VALIDAS = "TRWAGMYFPDXBNJZSQVHLCKE";
+
+    public static boolean esDniValido(String dni) {
+        if (dni == null || !dni.matches("\\d{8}[A-Z]")) {
+            return false; // Comprueba que tenga exactamente 8 números seguidos de 1 letra mayúscula
+        }
+
+        int numero = Integer.parseInt(dni.substring(0, 8));
+        return dni.charAt(8) == LETRAS_VALIDAS.charAt(numero % 23);
+    }
+}
