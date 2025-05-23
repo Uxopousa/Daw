@@ -1,0 +1,26 @@
+📚 RESUMO TEMA 5 – FICHEIROS EN JAVA
+
+🔹 TEXTO:
+- BufferedWriter: escribir texto liña a liña
+- BufferedReader: ler texto liña a liña
+- Usado para .txt e ficheiros CSV
+
+🔹 BINARIO:
+- FileOutputStream / FileInputStream: byte a byte
+- Ideal para imaxes, sons, ficheiros non textuais
+
+🔹 RANDOMACCESSFILE:
+- Permite ler/escribir en calquera posición do ficheiro
+- Ideal para rexistros de lonxitude fixa
+
+🔹 SERIALIZACIÓN:
+- ObjectOutputStream / ObjectInputStream
+- Para gardar e recuperar obxectos enteiros
+
+🔹 COPIA:
+- Texto: con BufferedReader + BufferedWriter
+- Binario: con FileInputStream + FileOutputStream
+- Obxectos: copiar os bytes .ser con transferTo ou bucle
+
+✅ Sempre usar try-with-resources para pechar os fluxos automaticamente.
+✅ Usar constantes para rutas facilita adaptar o código ao exame.
