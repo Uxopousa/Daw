@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS `agenda`;
+USE `agenda`;
+
+CREATE TABLE `contactos` (
+  `id` VARCHAR(4)    PRIMARY KEY,
+  `nombre` VARCHAR(100),
+  `telefono` VARCHAR(20),
+  `favorito` BOOLEAN NOT NULL DEFAULT FALSE
+);

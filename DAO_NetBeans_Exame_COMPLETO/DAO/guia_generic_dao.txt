@@ -1,0 +1,78 @@
+
+Guía práctica para crear y usar GenericDAO en Java
+==================================================
+
+1. Prepara el fichero de propiedades (db.properties)
+   - Crea un archivo llamado db.properties en el classpath (por ejemplo src/main/resources).
+   - Incluye estas líneas, cambiando URL, usuario y contraseña según tu entorno:
+       db.url=jdbc:mysql://localhost:3306/TU_BASE_DATOS
+       db.user=tu_usuario
+       db.password=tu_contraseña
+
+2. Crea la clase de conexión (ConexionDB.java)
+   - Lee db.properties y ofrece un método estático getConexion():
+       public class ConexionDB {
+           // carga propiedades en un bloque static
+           public static Connection getConexion() throws SQLException { ... }
+       }
+
+3. Crea la clase GenericDAO (GenericDAO.java)
+   - Copia esta cabecera y pega en GenericDAO.java:
+       public abstract class GenericDAO<T> {
+           private final String tableName;
+           private final String[] columns;
+           protected GenericDAO(String tableName, String[] columns) { ... }
+           protected abstract T mapRow(ResultSet rs) throws SQLException;
+           protected abstract int setParams(PreparedStatement ps, T obj, boolean includeKey) throws SQLException;
+           protected abstract Object getKey(T obj);
+           public void insert(T obj) throws SQLException { ... }
+           public void update(T obj) throws SQLException { ... }
+           public void delete(T obj) throws SQLException { ... }
+           public List<T> getAll() throws SQLException { ... }
+       }
+   - No cambies nada dentro de GenericDAO.java después de pegarlo.
+
+4. Crea tu DAO concreto (ej. ProdutoDAO.java)
+   - Extiende GenericDAO indicando la tabla y columnas:
+       public class ProdutoDAO extends GenericDAO<Produto> {
+           private static final String TABLE = "Produtos";
+           private static final String[] COLS = {"ID","Nome","Prezo","Cantidade"};
+           public ProdutoDAO() { super(TABLE, COLS); }
+           @Override protected Produto mapRow(ResultSet rs) throws SQLException { ... }
+           @Override protected int setParams(PreparedStatement ps, Produto p, boolean includeKey) throws SQLException { ... }
+           @Override protected Object getKey(Produto p) { return p.getId(); }
+       }
+   - En mapRow: lee rs.getInt, rs.getString...
+   - En setParams: enlaza ps.setX(...).
+   - getKey devuelve el id.
+
+5. Crea tu clase modelo (Produto.java)
+   - Asegúrate de tener getters y setters:
+       public class Produto {
+           private int id;
+           private String nome;
+           private double prezo;
+           private int cantidade;
+           // constructor, getId(), getNome(), getPrezo(), getCantidade()
+       }
+
+6. Usa el DAO en tu aplicación (App.java)
+   - Ejemplo mínimo:
+       public class App {
+           public static void main(String[] args) {
+               ProdutoDAO dao = new ProdutoDAO();
+               Produto p = new Produto(1,"Portátil",899.99,10);
+               dao.insert(p);
+               dao.getAll().forEach(System.out::println);
+               p.setPrezo(799.99);
+               dao.update(p);
+               dao.delete(p);
+           }
+       }
+
+7. Para crear un nuevo DAO (ej. ClienteDAO)
+   - Copia ProdutoDAO.java → ClienteDAO.java
+   - Cambia TABLE, COLS
+   - Ajusta mapRow, setParams y getKey según la clase Cliente.
+
+¡Listo! Con esto sólo cambias nombres de tablas, columnas y tu clase modelo.
