@@ -1,0 +1,88 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
+
+public class Utilidades {
+
+    public static void xerarMenu(String titulo, String opcionsStr, String metodosStr) {
+        String[] opcions = opcionsStr.split(" *, *");
+        String[] metodos = metodosStr.split(" *, *");
+
+        if (opcions.length != metodos.length) {
+            System.out.println("// ERRO: O número de opcións non coincide co número de métodos.");
+            return;
+        }
+
+        String[][] firmas = new String[metodos.length][2]; // [tipo, nome]
+        for (int i = 0; i < metodos.length; i++) {
+            String[] partes = metodos[i].trim().split(" ");
+            if (partes.length == 2) {
+                firmas[i][0] = partes[0];
+                firmas[i][1] = partes[1];
+            } else {
+                firmas[i][0] = "void";
+                firmas[i][1] = partes[0];
+            }
+        }
+
+        // 1. IMPRIMIR MÉTODO menu()
+        System.out.println("public static void menu() {");
+        System.out.println("    Scanner sc = new Scanner(System.in);");
+        System.out.println("    int opcion;");
+        System.out.println("    String separador = \"\\n------------------------------\\n\";\n");
+
+        System.out.printf("    System.out.println(\"%s\");%n", titulo);
+        System.out.println("    do {");
+        for (int i = 0; i < opcions.length; i++) {
+            String op = opcions[i].trim();
+            op = op.substring(0, 1).toUpperCase() + op.substring(1);
+            System.out.printf("        System.out.println(\"%d. %s\");%n", i + 1, op);
+        }
+        System.out.printf("        System.out.println(\"%d. Saír\");%n", opcions.length + 1);
+        System.out.println("        System.out.print(\"→ \");");
+
+        System.out.println("        try {");
+        System.out.println("            opcion = Integer.parseInt(sc.nextLine());");
+        System.out.println("        } catch (NumberFormatException e) {");
+        System.out.println("            opcion = -1;");
+        System.out.println("        }");
+
+        System.out.println("        System.out.println(separador);");
+        System.out.println("        switch (opcion) {");
+        for (int i = 0; i < firmas.length; i++) {
+            System.out.printf("            case %d:%n", i + 1);
+            System.out.printf("                Accions.%s();%n", firmas[i][1]);
+            System.out.println("                break;");
+        }
+        System.out.printf("            case %d:%n", opcions.length + 1);
+        System.out.println("                System.out.println(\"Saíndo...\");");
+        System.out.println("                break;");
+        System.out.println("            default:");
+        System.out.println("                System.out.println(\"Opción non válida\");");
+        System.out.println("        }");
+        System.out.printf("    } while (opcion != %d);%n", opcions.length + 1);
+        System.out.println("}");
+
+        // 2. CREAR Accions.java
+        try (PrintWriter out = new PrintWriter(new FileWriter("Accions.java"))) {
+            out.println("public class Accions {");
+            for (String[] f : firmas) {
+                out.printf("\n    public static %s %s() {%n", f[0], f[1]);
+                out.println("        // TODO: implementar");
+                if (!f[0].equals("void")) {
+                    if (f[0].equals("boolean")) {
+                        out.println("        return false;");
+                    } else {
+                        out.println("        return null;");
+                    }
+                }
+                out.println("    }");
+            }
+            out.println("}");
+            System.out.println("// Ficheiro Accions.java creado correctamente.");
+        } catch (IOException e) {
+            System.out.println("// ERRO ao crear Accions.java: " + e.getMessage());
+        }
+    }
+}
